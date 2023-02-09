@@ -6,3 +6,4 @@ touch command creates an empty file
 chmod u+x makes the file executable for your user
 chmod u+x,g+x,o+r filename executes permission to the owner and the group owner, and read permission to other users, to the file
 chmod a+x filename adds execution permission to the owner, the group owner and the other users, to the file
+chmod 007 filename gives no executable permission to owner and group but all permissions to other users
