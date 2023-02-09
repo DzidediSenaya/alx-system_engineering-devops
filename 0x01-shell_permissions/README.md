@@ -9,3 +9,4 @@ chmod a+x filename adds execution permission to the owner, the group owner and t
 chmod 007 filename gives no executable permission to owner and group but all permissions to other users
 chmod 753 filename sets the mode of the file to -rwxr-x-wx
 chmod --reference=olleh hello sets the mode of the file hello the same as olleh’s mode
+chmod -R a+X .  Create a script that adds execute permission to all subdirectories of the current directory for the owner, the group owner and all other users. Regular files should not be changed
