@@ -8,3 +8,4 @@ chmod u+x,g+x,o+r filename executes permission to the owner and the group owner,
 chmod a+x filename adds execution permission to the owner, the group owner and the other users, to the file
 chmod 007 filename gives no executable permission to owner and group but all permissions to other users
 chmod 753 filename sets the mode of the file to -rwxr-x-wx
+chmod --reference=olleh hello sets the mode of the file hello the same as olleh’s mode
