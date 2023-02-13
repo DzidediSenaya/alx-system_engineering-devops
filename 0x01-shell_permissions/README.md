@@ -1,15 +1,23 @@
 u betty switches user to betty
+
 whoami displays the username of the current user
+
 groups prints out all the groups the current user is part of
+
 chown command changes file ownership
+
 touch command creates an empty file
+
 chmod u+x makes the file executable for your user
+
 chmod u+x,g+x,o+r filename executes permission to the owner and the group owner, and read permission to other users, to the file
+
 chmod a+x filename adds execution permission to the owner, the group owner and the other users, to the file
+
 chmod 007 filename gives no executable permission to owner and group but all permissions to other users
 
 chmod 753 filename sets the mode of the file to -rwxr-x-wx
 
 chmod --reference=olleh hello sets the mode of the file hello the same as olleh’s mode
 
-chmod -R a+X .  Create a script that adds execute permission to all subdirectories of the current directory for the owner, the group owner and all other users. Regular files should not be changed
+chmod -R a+X .   adds execute permission to all subdirectories of the current directory for the owner, the group owner and all other users. Regular files should not be changed
