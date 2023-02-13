@@ -26,10 +26,4 @@ ln -s /bin/ls __ls__  symbolic link to /bin/ls, named __ls__
 
 cp -u *.html ..     copies all the HTML files from the current working directory to the parent of the working directory, but only copy files that did not exist in the parent of the working directory or were newer than the versions in the parent of the working directory.
 
-chown -R vincent:staff .   changes the owner to vincent and the group owner to staff for all the files and directories in the working directory.
 
-chown -h vincent:staff _hello    changes the owner and the group owner of _hello to vincent and staff respectively
-
-chown --from=guillaume betty hello    changes the owner of the file hello to betty only if it is owned by the user guillaume
-
- telnet towel.blinkenlights.nl    will play the StarWars IV episode in the terminal.
