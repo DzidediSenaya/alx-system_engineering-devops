@@ -12,6 +12,7 @@ while [ $count -le 10 ]; do
     fi
 
     echo "Best School"
+
+    # Increment the counter after displaying "Best School"
     ((count++))
 done
-
