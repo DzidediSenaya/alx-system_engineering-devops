@@ -4,4 +4,3 @@
 # Using awk to extract visitor IP and HTTP status code from the Apache log file,
 # then counting occurrences and sorting the data
 awk '{ip[$1][$9]++} END {for (i in ip) for (j in ip[i]) print ip[i][j], i, j}' apache-access.log | sort -rn
-
