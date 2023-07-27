@@ -4,8 +4,8 @@
 
 # Use a for loop to iterate through the files in the current directory
 for file in *; do
-    # Check if the file is a regular file (not a directory) and has a dash in its name
-    if [ ! -f "$file" ] || [[ "$file" != *-* ]]; then
+    # Check if the file is a regular file (not a directory), has a dash in its name, and is not hidden
+    if [ ! -f "$file" ] || [[ "$file" != *-* ]] || [[ "$file" == .* ]]; then
         continue
     fi
 
