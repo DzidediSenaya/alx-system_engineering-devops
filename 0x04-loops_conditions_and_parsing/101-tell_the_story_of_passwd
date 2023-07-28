@@ -3,6 +3,5 @@
 
 # Using a while loop to read the content of /etc/passwd line by line
 while IFS=':' read -r username _ userid _ _ homedir shell; do
-    echo "The user $username is part of the $userid gang, lives in $homedir and rides $shell. $userid's place is protected by the passcode x, more info about the user here: $username"
+    echo "The user $username is part of the $userid gang, lives in $homedir and rides $shell. $username's place is protected by the passcode x, more info about the user here: $username"
 done < /etc/passwd
-

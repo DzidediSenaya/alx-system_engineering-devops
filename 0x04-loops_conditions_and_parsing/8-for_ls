@@ -4,7 +4,7 @@
 
 # Use a for loop to iterate through the files in the current directory
 for file in *; do
-    # Check if the file is not hidden and has a dash in its name
+    # Check if the file is a regular file (not a directory) and has a dash in its name
     if [ ! -f "$file" ] || [[ "$file" != *-* ]]; then
         continue
     fi
@@ -15,4 +15,3 @@ for file in *; do
     # Display the extracted name in the list format
     echo "$name"
 done
-

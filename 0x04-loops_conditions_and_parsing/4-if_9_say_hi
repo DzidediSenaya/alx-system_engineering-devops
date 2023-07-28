@@ -8,10 +8,12 @@ count=1
 while [ $count -le 10 ]; do
     # Check if it's the 9th iteration
     if [ $count -eq 9 ]; then
+        echo "Best School"
         echo "Hi"
+    else
+        echo "Best School"
     fi
 
-    echo "Best School"
+    # Increment the counter
     ((count++))
 done
-
