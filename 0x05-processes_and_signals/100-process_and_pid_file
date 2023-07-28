@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# This script displays "To infinity and beyond" indefinitely
+# and responds to specific signals with custom messages.
+
+# Function to handle SIGTERM and SIGQUIT signals
+terminate_script() {
+  echo "I hate the kill command"
+  rm -f /var/run/myscript.pid
+  exit 0
+}
+
+# Function to handle SIGINT signal
+handle_sigint() {
+  echo "Y U no love me?!"
+}
+
+# Register signal handlers
+trap 'terminate_script' SIGTERM SIGQUIT
+trap 'handle_sigint' SIGINT
+
+# Create the file containing the script's PID
+echo $$ > /var/run/myscript.pid
+
+# Loop indefinitely
+while true; do
+  echo "To infinity and beyond"
+  sleep 2
+done
+

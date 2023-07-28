@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# This script displays the PID and process name of processes whose names contain the word "bash".
+
+# Use pgrep command to find PIDs of processes with the name "bash" and store the results in an array
+pids=($(pgrep bash))
+
+# Loop through the array to display PID and process name for each process
+for pid in "${pids[@]}"; do
+  process_name=$(ps -p "$pid" -o comm=)
+  echo "$pid $process_name"
+done
+

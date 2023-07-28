@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# This script displays a list of currently running processes, including process hierarchy.
+
+# Use ps command to list all processes and format the output with user-oriented columns
+ps axo user,pid,%cpu,%mem,vsz,rss,tty,stat,start,time,command
+

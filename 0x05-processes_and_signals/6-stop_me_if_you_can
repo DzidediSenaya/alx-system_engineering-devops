@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# This script stops 4-to_infinity_and_beyond process
+
+# Find the PID of 4-to_infinity_and_beyond process
+pid=$(pgrep -f "4-to_infinity_and_beyond.sh")
+
+# Check if the process is running
+if [ -z "$pid" ]; then
+  echo "4-to_infinity_and_beyond process not found!"
+else
+  # Define a function to handle the termination signal
+  stop_process() {
+    echo "Terminated"
+    exit 0
+  }
+
+  # Register the stop_process function to be executed when SIGUSR1 signal is received
+  trap stop_process SIGUSR1
+
+  # Notify the process to stop by sending a SIGUSR1 signal
+  kill -SIGUSR1 "$pid"
+fi
+
