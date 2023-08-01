@@ -4,7 +4,7 @@
 input_string = ARGV[0]
 
 # Define the regular expression using Oniguruma to match the specified strings
-regex = /\bhb+b\b/
+regex = /\bhb+t+n\b/
 
 # Use the 'scan' method to find all occurrences of the regex in the input string
 matches = input_string.scan(regex)
