@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#Displays listening TCP and UDP ports with the PID and program name.
+
+#Run netstat to fetch the listening TCP and UDP ports along with associated processes
+netstat -tulnpe
+
