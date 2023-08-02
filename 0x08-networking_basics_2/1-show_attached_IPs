@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Displays all active IPv4 IPs on the machine.
+
+# Get the list of network interfaces with IPv4 addresses
+interfaces=$(ip -o -4 addr show | awk '{print $2}')
+
+# Loop through each interface and extract the IPv4 addresses
+for interface in $interfaces; do
+  ips=$(ip -o -4 addr show dev "$interface" | awk '{print $4}')
+  echo "$ips"
+done
+

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Configures the localhost and facebook.com resolutions.
+
+# Check if running in Docker (optional, you may skip this if not needed)
+if grep -q 'docker' /proc/1/cgroup; then
+  echo "Running in Docker, proceeding with configuration..."
+else
+  echo "Not running in Docker. Exiting..."
+  exit 1
+fi
+
+# Backup the original hosts file
+sudo cp /etc/hosts /etc/hosts.backup
+
+# Modify the hosts file to set the desired resolutions
+sudo sed -i 's/^127\.0\.0\.1[[:space:]]\+localhost$/127.0.0.2 localhost/' /etc/hosts
+sudo sed -i 's/^157\.240\.11\.35[[:space:]]\+facebook\.com$/8.8.8.8 facebook.com/' /etc/hosts
+
+echo "Configuration completed successfully."
+
