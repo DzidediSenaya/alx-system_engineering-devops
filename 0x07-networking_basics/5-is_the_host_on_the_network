@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Script Name: Is the Host on the Network?
-# Description: Ping an IP address passed as an argument.
+# Is the Host on the Network?
+# Ping an IP address passed as an argument.
 
 if [ $# -ne 1 ]; then
   echo "Usage: $0 {IP_ADDRESS}"
