@@ -11,4 +11,3 @@ matches = input_string.scan(regex)
 
 # Join the matches into a single string and print the result
 puts matches.join(" ")
-
