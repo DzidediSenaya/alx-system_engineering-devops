@@ -4,7 +4,7 @@
 input_string = ARGV[0]
 
 # Define the regular expression using Oniguruma to match the specified strings
-regex = /hb+t+n/
+regex = /h[btn]*n/
 
 # Use the 'scan' method to find all occurrences of the regex in the input string
 matches = input_string.scan(regex)
