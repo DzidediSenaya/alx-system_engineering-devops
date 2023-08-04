@@ -2,6 +2,18 @@
 # Configures the localhost and facebook.com resolutions.
 
 cp /etc/hosts ~/hosts.new
+# makes a backup copy of the original /etc/hosts file
+# saves it as ~/hosts.new in the user's home directory.
+
 echo "127.0.0.2		localhost" > ~/hosts.new
+# creates a new file ~/hosts.new (or overwrites it if it already exists)
+# adds the line "127.0.0.2    localhost" to it.
+# configures the resolution of "localhost" to point to the IP address 127.0.0.2.
+
 echo "8.8.8.8		facebook.com" >> ~/hosts.new
+# appends line, ("8.8.8.8    facebook.com") to the ~/hosts.new file. 
+# configures the resolution of "facebook.com" to point to the IP address 8.8.8.8.
+
 cp -f ~/hosts.new /etc/hosts
+# replaces the original /etc/hosts file with the modified ~/hosts.new file.
+# The -f flag force copies, overriding the original /etc/hosts file if it exists.
