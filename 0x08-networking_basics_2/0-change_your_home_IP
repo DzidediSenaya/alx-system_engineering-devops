@@ -11,10 +11,14 @@ fi
 # Backup the original hosts file
 sudo cp /etc/hosts /etc/hosts.backup
 
-# Configure localhost resolution
-sudo sed -i '/^127\.0\.0\.1[[:space:]]\+localhost[[:space:]]*$/s//127.0.0.2 localhost/' /etc/hosts
+# Copy the original hosts file to ~/hosts.new
+cp /etc/hosts ~/hosts.new
 
-# Configure facebook.com resolution
-sudo sed -i 's/^31\.13\.66\.35[[:space:]]\+facebook\.com[[:space:]]*$/8.8.8.8 facebook.com/' /etc/hosts
+# Add the desired entries to ~/hosts.new
+echo "127.0.0.2		localhost" >> ~/hosts.new
+echo "8.8.8.8		facebook.com" >> ~/hosts.new
+
+# Replace the original hosts file with the modified ~/hosts.new
+sudo cp -f ~/hosts.new /etc/hosts
 
 echo "Configuration completed successfully."
