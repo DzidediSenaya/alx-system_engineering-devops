@@ -11,7 +11,7 @@ fi
 # Backup the original hosts file
 sudo cp /etc/hosts /etc/hosts.backup
 
-# Check if localhost entry exists in the hosts file
+# Check if localhost entry exists in the hosts file and replace it with the desired entry
 if grep -qE '^[[:space:]]*127\.0\.0\.2[[:space:]]+localhost[[:space:]]*$' /etc/hosts; then
   echo "localhost entry already exists in /etc/hosts. No need to change."
 else
@@ -20,6 +20,6 @@ else
 fi
 
 # Modify the facebook.com entry to set the desired resolution
-sudo sed -i 's/^31\.13\.66\.35[[:space:]]\+facebook\.com[[:space:]]*$/8.8.8.8 facebook.com/' /etc/hosts
+sudo sed -i 's/^31\.13\.66\.35[[:space:]]+facebook\.com[[:space:]]*$/8.8.8.8 facebook.com/' /etc/hosts
 
 echo "Configuration completed successfully."
