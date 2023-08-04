@@ -12,7 +12,8 @@ fi
 sudo cp /etc/hosts /etc/hosts.backup
 
 # Modify the hosts file to set the desired resolutions
-sudo sed -i 's/^127\.0\.0\.1[[:space:]]\+localhost$/127.0.0.2 localhost/' /etc/hosts
-sudo sed -i 's/^157\.240\.11\.35[[:space:]]\+facebook\.com$/8.8.8.8 facebook.com/' /etc/hosts
+sudo sed -i 's/^127\.0\.0\.1[[:space:]]\+localhost[[:space:]]*$/127.0.0.2 localhost/' /etc/hosts
+sudo sed -i 's/^31\.13\.66\.35[[:space:]]\+facebook\.com[[:space:]]*$/8.8.8.8 facebook.com/' /etc/hosts
 
 echo "Configuration completed successfully."
+
