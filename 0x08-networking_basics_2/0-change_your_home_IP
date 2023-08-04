@@ -1,24 +1,7 @@
 #!/usr/bin/env bash
+# Configures the localhost and facebook.com resolutions.
 
-# Check if running in Docker (optional, you may skip this if not needed)
-if grep -q 'docker' /proc/1/cgroup; then
-  echo "Running in Docker, proceeding with configuration..."
-else
-  echo "Not running in Docker. Exiting..."
-  exit 1
-fi
-
-# Backup the original hosts file
-sudo cp /etc/hosts /etc/hosts.backup
-
-# Copy the original hosts file to ~/hosts.new
 cp /etc/hosts ~/hosts.new
-
-# Add the desired entries to ~/hosts.new
-echo "127.0.0.2		localhost" >> ~/hosts.new
+echo "127.0.0.2		localhost" > ~/hosts.new
 echo "8.8.8.8		facebook.com" >> ~/hosts.new
-
-# Replace the original hosts file with the modified ~/hosts.new
-sudo cp -f ~/hosts.new /etc/hosts
-
-echo "Configuration completed successfully."
+cp -f ~/hosts.new /etc/hosts
