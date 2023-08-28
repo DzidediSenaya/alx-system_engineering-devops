@@ -3,12 +3,11 @@
 # Extract the first argument from the command line
 input_string = ARGV[0]
 
-# Define the regular expression using Oniguruma to match any of the specified strings
-regex = /^(hbn|hbtn|hbttn|hbtttn|hbttttn)$/
+# Define the specified strings to match
+valid_strings = ["hbn", "hbtn", "hbttn", "hbtttn", "hbttttn"]
 
-# Use the 'scan' method to find all occurrences of the regex in the input string
-matches = input_string.scan(regex)
+# Check if the input string is one of the specified strings
+matches = valid_strings.select { |str| str == input_string }
 
 # Join the matches into a single string and print the result
 puts matches.join("\n")
-

@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 # Configures the localhost and facebook.com resolutions.
 
-# Check if running in Docker (optional, you may skip this if not needed)
-if grep -q 'docker' /proc/1/cgroup; then
-  echo "Running in Docker, proceeding with configuration..."
-else
-  echo "Not running in Docker. Exiting..."
-  exit 1
-fi
+cp /etc/hosts ~/hosts.new
+# make a backup copy of the original /etc/hosts file and
+# save it as ~/hosts.new in the user's home directory.
 
-# Backup the original hosts file
-sudo cp /etc/hosts /etc/hosts.backup
+echo "127.0.0.2		localhost" > ~/hosts.new
+# create a new file ~/hosts.new (or overwrite it if it already exists)
+# add the line "127.0.0.2    localhost" to it.
+# configure the resolution of "localhost" to point to the IP address 127.0.0.2.
 
-# Modify the hosts file to set the desired resolutions
-sudo sed -i 's/^127\.0\.0\.1[[:space:]]\+localhost$/127.0.0.2 localhost/' /etc/hosts
-sudo sed -i 's/^157\.240\.11\.35[[:space:]]\+facebook\.com$/8.8.8.8 facebook.com/' /etc/hosts
+echo "8.8.8.8		facebook.com" >> ~/hosts.new
+# append line ("8.8.8.8    facebook.com") to the ~/hosts.new file. 
+# configure the resolution of "facebook.com" to point to the IP address 8.8.8.8.
 
-echo "Configuration completed successfully."
-
+cp -f ~/hosts.new /etc/hosts
+# replace the original /etc/hosts file with the modified ~/hosts.new file.
+# The -f flag force copies, overriding the original /etc/hosts file if it exists.
