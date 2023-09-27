@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Bash script to install and configure Nginx web server
+
+# Update the package list
+apt-get update -y
+
+# Install Nginx
+apt-get install nginx -y
+
+# Start Nginx
+service nginx start
+
+# Create a custom HTML file with "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
+
+# Check if Nginx is listening on port 80
+if [ $(netstat -tuln | grep ":80" | wc -l) -eq 0 ]; then
+    echo "Nginx is not listening on port 80. Please check the configuration."
+    exit 1
+fi
+
+# Check if Nginx returns "Hello World!" for GET request to root
+response=$(curl -s http://localhost)
+if [ "$response" = "Hello World!" ]; then
+    echo "Nginx is configured correctly."
+else
+    echo "Nginx configuration test failed."
+fi

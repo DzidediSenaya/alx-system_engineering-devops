@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Configure Nginx for a 301 redirection
+
+# Check if Nginx is installed
+if ! command -v nginx &> /dev/null; then
+    echo "Nginx is not installed. Please install it first."
+    exit 1
+fi
+
+# Create a configuration file for the redirection
+cat <<EOF > /etc/nginx/sites-available/redirect_me
+server {
+    listen 80;
+    listen [::]:80;
+    server_name _;
+    return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+}
+EOF
+
+# Create a symbolic link to enable the configuration
+ln -s /etc/nginx/sites-available/redirect_me /etc/nginx/sites-enabled/
+
+# Remove the default Nginx site configuration
+rm /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+nginx -t
+
+# Reload Nginx to apply the new configuration
+service nginx reload
