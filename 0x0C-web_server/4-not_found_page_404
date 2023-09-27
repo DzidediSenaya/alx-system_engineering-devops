@@ -7,6 +7,9 @@ if ! command -v nginx &> /dev/null; then
     exit 1
 fi
 
+# Create the directory for the custom 404 page
+mkdir -p /etc/nginx/html
+
 # Create a custom 404 page with the required string
 cat <<EOF > /etc/nginx/html/404.html
 <!DOCTYPE html>
