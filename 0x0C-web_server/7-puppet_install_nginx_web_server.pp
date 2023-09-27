@@ -1,3 +1,5 @@
+# Puppet manifest to install and configure Nginx
+
 # Install Nginx package
 package { 'nginx':
   ensure => 'installed',
@@ -12,7 +14,7 @@ file { '/var/www/html/index.html':
 
 # Configure the default Nginx site
 file { '/etc/nginx/sites-available/default':
-  content => template('nginx/default.erb'), # You may need to create a template for this
+  content => template('nginx/default.erb'),
   require => Package['nginx'],
 }
 
