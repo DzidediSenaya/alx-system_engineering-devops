@@ -1,20 +1,11 @@
 #!/usr/bin/env bash
-# This script installs and configures Nginx web server
+# Bash script to install and configure Nginx web server
 
 # Update the package list
 apt-get update -y
 
 # Install Nginx
 apt-get install nginx -y
-
-# Check if Nginx is installed
-if ! [ -x "$(command -v nginx)" ]; then
-    echo "Nginx installation failed."
-    exit 1
-fi
-
-# Start Nginx
-/etc/init.d/nginx start
 
 # Create a custom HTML file with "Hello World!"
 echo "Hello World!" > /var/www/html/index.html
@@ -24,6 +15,9 @@ if ! nc -z localhost 80; then
     echo "Nginx is not listening on port 80. Please check the configuration."
     exit 1
 fi
+
+# Restart Nginx without using systemctl
+/etc/init.d/nginx restart
 
 # Check if Nginx returns "Hello World!" for GET request to root
 response=$(curl -s http://localhost)
