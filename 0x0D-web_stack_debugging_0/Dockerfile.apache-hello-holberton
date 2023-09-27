@@ -1,0 +1,11 @@
+# Use the official Ubuntu as a parent image
+FROM ubuntu:latest
+
+# Copy the script into the container
+COPY 0-give_me_a_page /root/
+
+# Make the script executable
+RUN chmod +x /root/0-give_me_a_page
+
+# Run the script to configure Apache and start it
+CMD ["/root/0-give_me_a_page"]
