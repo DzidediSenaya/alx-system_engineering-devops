@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Bash script to install and configure Nginx web server
+# Installs Nginx with the following configurations:
+#   - Listens on port 80.
+#   - Returns a page containing "Holberton School" when queried
+#     at the root with a curl GET request.
 
 # Update the package list
 apt-get update -y
@@ -7,22 +10,21 @@ apt-get update -y
 # Install Nginx
 apt-get install nginx -y
 
-# Start Nginx
+# Stop Nginx to apply the configuration changes
+service nginx stop
+
+# Create a custom HTML file with "Holberton School" content
+echo "Holberton School" > /etc/nginx/html/index.html
+
+# Create the Nginx server block configuration
+cat <<EOF > /etc/nginx/sites-available/default
+server {
+    listen      80 default_server;
+    listen      [::]:80 default_server;
+    root        /etc/nginx/html;
+    index       index.html index.htm;
+}
+EOF
+
+# Start Nginx to apply the new configuration
 service nginx start
-
-# Create a custom HTML file with "Hello World!"
-echo "Hello World!" > /var/www/html/index.html
-
-# Check if Nginx is listening on port 80
-if [ $(netstat -tuln | grep ":80" | wc -l) -eq 0 ]; then
-    echo "Nginx is not listening on port 80. Please check the configuration."
-    exit 1
-fi
-
-# Check if Nginx returns "Hello World!" for GET request to root
-response=$(curl -s http://localhost)
-if [ "$response" = "Hello World!" ]; then
-    echo "Nginx is configured correctly."
-else
-    echo "Nginx configuration test failed."
-fi
