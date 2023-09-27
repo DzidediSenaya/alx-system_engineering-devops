@@ -1,30 +1,49 @@
 #!/usr/bin/env bash
 # Configure Nginx for a custom 404 page
 
-apt-get update
-apt-get install -y nginx
+# Check if Nginx is installed
+if ! command -v nginx &> /dev/null; then
+    echo "Nginx is not installed. Please install it first."
+    exit 1
+fi
 
-mkdir /etc/nginx/html
-touch /etc/nginx/html/index.html
-echo "Holberton School" > /etc/nginx/html/index.html
-touch /etc/nginx/html/404.html
-echo "Ceci n'est pas une page" > /etc/nginx/html/404.html
+# Create a custom 404 page with the required string
+cat <<EOF > /etc/nginx/html/404.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+</head>
+<body>
+    <h1>Ceci n'est pas une page</h1>
+</body>
+</html>
+EOF
 
-printf %s "server {
-    listen 80;
+# Update the Nginx default site configuration to use the custom 404 page
+cat <<EOF > /etc/nginx/sites-available/default
+server {
+    listen 80 default_server;
     listen [::]:80 default_server;
-    root   /etc/nginx/html;
-    index  index.html index.htm;
 
-    location /redirect_me {
-        return 301 http://cuberule.com/;
+    root /var/www/html;
+    index index.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
     }
 
     error_page 404 /404.html;
-    location /404 {
-      root /etc/nginx/html;
-      internal;
+    location = /404.html {
+        root /etc/nginx/html;
     }
-}" > /etc/nginx/sites-available/default
+}
+EOF
 
-service nginx restart
+# Test Nginx configuration
+nginx -t
+
+# Reload Nginx to apply the new configuration
+service nginx reload
