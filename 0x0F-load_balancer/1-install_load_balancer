@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# This script installs and configures HAProxy on an Ubuntu server.
+
+# Check if the script is being run with superuser privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run this script as root or using sudo."
+    exit 1
+fi
+
+# Install HAProxy if not already installed
+if ! command -v haproxy &>/dev/null; then
+    apt-get update
+    apt-get install -y haproxy
+fi
+
+# Configure HAProxy to distribute requests using round-robin
+echo "Configuring HAProxy..."
+cat <<EOF > /etc/haproxy/haproxy.cfg
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    maxconn 4096
+    user haproxy
+    group haproxy
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    retries 3
+    option redispatch
+    maxconn 2000
+    timeout connect 5s
+    timeout client 30s
+    timeout server 30s
+
+frontend http-in
+    bind *:80
+    default_backend web-servers
+
+backend web-servers
+    balance roundrobin
+    server web-01 [STUDENT_ID]-web-01:80 check
+    server web-02 [STUDENT_ID]-web-02:80 check
+EOF
+
+# Enable and start HAProxy service
+systemctl enable haproxy
+systemctl start haproxy
+
+echo "HAProxy installation and configuration completed."
