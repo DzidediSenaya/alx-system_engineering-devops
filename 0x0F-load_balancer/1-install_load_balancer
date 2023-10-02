@@ -41,8 +41,8 @@ frontend http-in
 
 backend web-servers
     balance roundrobin
-    server web-01 52.87.211.229:80 check
-    server web-02 54.162.222.32:80 check
+    server 235164-web-01 52.87.211.229:80 check
+    server 235164-web-02 54.162.222.32:80 check
 EOF
 
 # Enable and start HAProxy service
