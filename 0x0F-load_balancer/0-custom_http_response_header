@@ -2,28 +2,19 @@
 # This script configures Nginx to include a custom HTTP response header
 # named X-Served-By with the value being the hostname of the server.
 
-# Check if the script is being run with superuser privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script as root or using sudo."
-    exit 1
-fi
+apt-get update
+apt-get install -y nginx
 
-# Install Nginx if not already installed
-if ! command -v nginx &>/dev/null; then
-    apt-get update
-    apt-get install -y nginx
-fi
+mkdir -p /var/www/html
+touch /var/www/html/index.html
+echo "Holberton School" > /var/www/html/index.html
+touch /var/www/html/404.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-# Get the hostname of the server
-server_hostname=$(hostname)
-
-# Create a custom Nginx configuration file
-echo "Adding custom Nginx configuration..."
-cat <<EOF > /etc/nginx/conf.d/custom_response_header.conf
-server {
+printf %s "server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    add_header X-Served-By $server_hostname;
+    add_header X-Served-By $HOSTNAME;
     root   /var/www/html;
     index  index.html index.htm;
 
@@ -36,13 +27,6 @@ server {
       root /var/www/html;
       internal;
     }
-}
-EOF
+}" > /etc/nginx/sites-available/default
 
-# Test Nginx configuration and reload if successful
-if nginx -t; then
-    systemctl reload nginx
-    echo "Nginx configuration reloaded."
-else
-    echo "Nginx configuration test failed. Please check your configuration."
-fi
+service nginx restart
