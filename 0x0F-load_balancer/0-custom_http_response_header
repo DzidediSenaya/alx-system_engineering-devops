@@ -1,22 +1,53 @@
 #!/usr/bin/env bash
+# Function to configure Nginx with the custom header
+configure_nginx() {
+    local server_name="$1"
 
-# Update and install nginx
-sudo apt-get -y update
-sudo apt-get -y install nginx
+    # Edit the Nginx default configuration
+    sudo sed -i '/location \//a \        add_header X-Served-By $hostname;\n' /etc/nginx/sites-enabled/default
 
-# Create custom HTTP response header file
-echo 'add_header X-Served-By $hostname;' | sudo tee /etc/nginx/conf.d/custom_response_header.conf
+    # Test Nginx configuration
+    sudo nginx -t
 
-# Remove the default symbolic link in sites-enabled
-sudo rm -f /etc/nginx/sites-enabled/default
+    # Reload Nginx to apply changes
+    sudo systemctl reload nginx
 
-# Reload Nginx to apply changes
-sudo systemctl reload nginx
+    # Check if the custom header is present
+    local response="$(curl -sI http://$server_name | grep X-Served-By)"
+    
+    if [[ -n "$response" ]]; then
+        echo "Custom header X-Served-By is present in the response on $server_name."
+    else
+        echo "Custom header X-Served-By is NOT present in the response on $server_name."
+    fi
+}
 
-# Ensure Nginx and custom header are configured correctly
-if [ "$(curl -sI localhost | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-01" ] && \
-   [ "$(curl -sI localhost | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-02" ]; then
-    echo "Custom headers are configured correctly on both web-01 and web-02"
+# Main script
+if [[ "$EUID" -ne 0 ]]; then
+    echo "Please run this script with sudo or as root."
+    exit 1
+fi
+
+# Check if nginx is installed
+if ! command -v nginx &>/dev/null; then
+    echo "Nginx is not installed. Please install it and re-run this script."
+    exit 1
+fi
+
+# Configure Nginx on web-01 and web-02
+configure_nginx "web-01"
+configure_nginx "web-02"
+
+# Check if the configuration meets the project requirements
+if [[ -f README.md && -s README.md ]]; then
+    echo "README.md exists and is not empty."
 else
-    echo "Custom headers are not configured correctly"
+    echo "README.md is missing or empty."
+fi
+
+# Check if the script is present
+if [[ -f 0-custom_http_response_header ]]; then
+    echo "The script '0-custom_http_response_header' is present."
+else
+    echo "The script '0-custom_http_response_header' is missing."
 fi
