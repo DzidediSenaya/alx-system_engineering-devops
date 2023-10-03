@@ -1,32 +1,53 @@
 #!/usr/bin/env bash
-# This script configures Nginx to include a custom HTTP response header
-# named X-Served-By with the value being the hostname of the server.
+# Function to configure Nginx with the custom header
+configure_nginx() {
+    local server_name="$1"
 
-apt-get update
-apt-get install -y nginx
+    # Edit the Nginx default configuration
+    sudo sed -i '/location \//a \        add_header X-Served-By $hostname;\n' /etc/nginx/sites-enabled/default
 
-mkdir -p /var/www/html
-touch /var/www/html/index.html
-echo "Holberton School" > /var/www/html/index.html
-touch /var/www/html/404.html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
+    # Test Nginx configuration
+    sudo nginx -t
 
-printf %s "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    add_header X-Served-By $HOSTNAME;
-    root   /var/www/html;
-    index  index.html index.htm;
+    # Reload Nginx to apply changes
+    sudo systemctl reload nginx
 
-    location /redirect_me {
-        return 301 http://cuberule.com/;
-    }
+    # Check if the custom header is present
+    local response="$(curl -sI http://$server_name | grep X-Served-By)"
+    
+    if [[ -n "$response" ]]; then
+        echo "Custom header X-Served-By is present in the response on $server_name."
+    else
+        echo "Custom header X-Served-By is NOT present in the response on $server_name."
+    fi
+}
 
-    error_page 404 /404.html;
-    location /404 {
-      root /var/www/html;
-      internal;
-    }
-}" > /etc/nginx/sites-available/default
+# Main script
+if [[ "$EUID" -ne 0 ]]; then
+    echo "Please run this script with sudo or as root."
+    exit 1
+fi
 
-service nginx restart
+# Check if nginx is installed
+if ! command -v nginx &>/dev/null; then
+    echo "Nginx is not installed. Please install it and re-run this script."
+    exit 1
+fi
+
+# Configure Nginx on web-01 and web-02
+configure_nginx "web-01"
+configure_nginx "web-02"
+
+# Check if the configuration meets the project requirements
+if [[ -f README.md && -s README.md ]]; then
+    echo "README.md exists and is not empty."
+else
+    echo "README.md is missing or empty."
+fi
+
+# Check if the script is present
+if [[ -f 0-custom_http_response_header ]]; then
+    echo "The script '0-custom_http_response_header' is present."
+else
+    echo "The script '0-custom_http_response_header' is missing."
+fi
