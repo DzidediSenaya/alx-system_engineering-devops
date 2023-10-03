@@ -1,26 +1,40 @@
 #!/usr/bin/env bash
-# Update and install HAproxy
-sudo apt-get -y update
-sudo apt-get -y install haproxy
+# Update the hostname to match the task requirements
+echo "web-01" | sudo tee /etc/hostname
+sudo hostnamectl set-hostname web-01
+
+# Install HAproxy
+sudo apt-get update
+sudo apt-get install -y haproxy
 
 # Configure HAproxy
-echo "
-frontend http-in
-    bind *:80
-    default_backend servers
+cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    user haproxy
+    group haproxy
+    daemon
 
-backend servers
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    stats uri /haproxy?stats
+    default_backend http_back
+
+backend http_back
     balance roundrobin
     server web-01 18.204.20.244:80 check
-    server web-02 100.25.159.16:80 check" | sudo tee /etc/haproxy/haproxy.cfg
+    server web-02 100.25.159.16:80 check
+EOF
 
-# Restart HAproxy to apply changes
+# Restart HAproxy
 sudo systemctl restart haproxy
-
-# Ensure HAproxy is configured correctly
-if [ "$(curl -sI 100.25.188.160 | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-01" ] && \
-   [ "$(curl -sI 100.25.188.160 | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-02" ]; then
-    echo "HAproxy is configured correctly"
-else
-    echo "HAproxy is not configured correctly"
-fi
