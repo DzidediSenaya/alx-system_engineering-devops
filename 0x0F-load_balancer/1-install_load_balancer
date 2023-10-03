@@ -1,43 +1,27 @@
 #!/usr/bin/env bash
-# This script installs and configures HAProxy on an Ubuntu server.
 
+# Update and install HAproxy
+sudo apt-get -y update
+sudo apt-get -y install haproxy
 
-apt-get install -y software-properties-common
-add-apt-repository -y ppa:vbernat/haproxy-1.8
-apt-get update
-apt-get install -y haproxy=1.8.\*
+# Configure HAproxy
+echo "
+frontend http-in
+    bind *:80
+    default_backend servers
 
-echo "ENABLED=1" >> /etc/default/haproxy
-mv /etc/haproxy/haproxy.cfg{,.original}
-touch /etc/haproxy/haproxy.cfg
-
-printf %s "global
-    log 127.0.0.1 local0 notice
-    maxconn 2000
-    user haproxy
-    group haproxy
-
-defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    retries 3
-    option redispatch
-    timeout connect  5000
-    timeout client  10000
-    timeout server  10000
-
-listen hbnb
-    bind 0.0.0.0:80
-    mode http
-    stats enable
-    stats uri /haproxy?stats
+backend servers
     balance roundrobin
-    option httpclose
-    option forwardfor
-    server 235164-web-01 52.87.211.229:80 check
-    server 235164-web-02 54.162.222.32:80 check
-" >> /etc/haproxy/haproxy.cfg
+    server web-01 18.204.20.244:80 check
+    server web-02 100.25.159.16:80 check" | sudo tee /etc/haproxy/haproxy.cfg
 
-service haproxy start
+# Restart HAproxy to apply changes
+sudo systemctl restart haproxy
+
+# Ensure HAproxy is configured correctly
+if [ "$(curl -sI 100.25.188.160 | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-01" ] && \
+   [ "$(curl -sI 100.25.188.160 | grep -i 'X-Served-By' | awk '{print $2}')" == "03-web-02" ]; then
+    echo "HAproxy is configured correctly"
+else
+    echo "HAproxy is not configured correctly"
+fi
