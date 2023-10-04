@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Function to configure Nginx with the custom header
 # shellcheck disable=SC2154
 
 # Update package list
