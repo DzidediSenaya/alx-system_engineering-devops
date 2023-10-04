@@ -1,40 +1,18 @@
 #!/usr/bin/env bash
 # Update the hostname to match the task requirements
-echo "web-01" | sudo tee /etc/hostname
-sudo hostnamectl set-hostname web-01
 
-# Install HAproxy
-sudo apt-get update
-sudo apt-get install -y haproxy
+apt-get update
+apt-get install software-properties-common -y
+add-apt-repository ppa:vbernat/haproxy-1.7 -y
+apt-get update
+apt-get install haproxy=1.7.\* -y
+echo "frontend web-front
+        bind *:80
+        default_backend web-backend
 
-# Configure HAproxy
-cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg
-global
-    log /dev/log local0
-    log /dev/log local1 notice
-    user haproxy
-    group haproxy
-    daemon
-
-defaults
-    log global
-    mode http
-    option httplog
-    option dontlognull
-    timeout connect 5000
-    timeout client 50000
-    timeout server 50000
-
-frontend http_front
-    bind *:80
-    stats uri /haproxy?stats
-    default_backend http_back
-
-backend http_back
-    balance roundrobin
-    server web-01 18.204.20.244:80 check
-    server web-02 100.25.159.16:80 check
-EOF
-
-# Restart HAproxy
-sudo systemctl restart haproxy
+backend web-backend
+        balance roundrobin
+        server web1 35.227.47.184:80 check
+        server web2 35.190.188.208:80 check
+" | sudo tee -a /etc/haproxy/haproxy.cfg
+sudo service haproxy start
