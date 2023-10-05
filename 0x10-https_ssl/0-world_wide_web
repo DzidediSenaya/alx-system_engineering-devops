@@ -1,29 +1,17 @@
 #!/usr/bin/env bash
 # This script displays information about subdomains of a given domain.
-
-# Function to get DNS record information for a subdomain
-get_dns_info() {
-  local domain="$1"
-  local subdomain="$2"
-  local result
-  result=$(dig "$subdomain.$domain" | awk '/^;; ANSWER SECTION:/{getline; print}')
-  echo "$result"
+domain_information () {
+    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
 
-# Check if both domain and subdomain are provided
-if [ "$#" -eq 2 ]; then
-  domain="$1"
-  subdomain="$2"
-  dns_info=$(get_dns_info "$domain" "$subdomain")
-  echo "The subdomain $subdomain is a $dns_info record and points to $dns_info"
-# Check if only domain is provided, and display information for default subdomains
-elif [ "$#" -eq 1 ]; then
-  domain="$1"
-  default_subdomains=("www" "lb-01" "web-01" "web-02")
-  for subdomain in "${default_subdomains[@]}"; do
-    dns_info=$(get_dns_info "$domain" "$subdomain")
-    echo "The subdomain $subdomain is a $dns_info record and points to $dns_info"
-  done
-else
-  echo "Usage: $0 domain [subdomain]"
+if [ "$#" == 1 ]
+then
+  domain_information "$1" "www"
+  domain_information "$1" "lb-01"
+  domain_information "$1" "web-01"
+  domain_information "$1" "web-02"
+elif [ "$#" == 2 ]
+then
+  domain_information "$1" "$2"
 fi
