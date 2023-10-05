@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Setup HAProxy with SSL termination for subdomain www.lebenebotanicals.tech
+
+# Install HAProxy 1.5 or higher if not already installed
+# Install Certbot and obtain an SSL certificate for your subdomain
 
 # Install HAProxy and Certbot (Assuming you are on a Debian/Ubuntu system)
 sudo apt-get update
@@ -13,13 +15,10 @@ cat <<EOF > /etc/haproxy/haproxy.cfg
 # Global Configuration
 global
     log /dev/log local0
-    log /dev/log local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin
-    stats timeout 30s
+    maxconn 2048
     user haproxy
     group haproxy
-    daemon
+    tune.ssl.default-dh-param 2048
 
 # Defaults Configuration
 defaults
@@ -27,21 +26,36 @@ defaults
     mode http
     option httplog
     option dontlognull
+    retries 3
+    option redispatch
     timeout connect 5000
-    timeout client 50000
-    timeout server 50000
+    timeout client 10000
+    timeout server 10000
+    option forwardfor
+    option http-server-close
 
 # Frontend Configurations
+frontend www-http
+    bind 0.0.0.0:80
+    reqadd X-Forwarded-Proto:\ http
+    default_backend www-backend
+
 frontend www-https
-    bind *:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/fullchain.pem
+    bind 0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/fullchain.pem
     reqadd X-Forwarded-Proto:\ https
+    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
     default_backend www-backend
 
 # Backend Configuration
 backend www-backend
-   server 235164-web-01 18.204.20.244:80 check
-   server  235164-web-02 100.25.159.16:80 check
+    balance roundrobin
+    redirect scheme https if !{ ssl_fc }
+    server 235164-web-01 18.204.20.244:80 check
+    server 235164-web-02 100.25.159.16:80 check
 
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:54321
 EOF
 
 # Restart HAProxy to apply the configuration
