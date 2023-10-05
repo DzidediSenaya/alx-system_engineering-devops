@@ -1,52 +1,32 @@
 #!/usr/bin/env bash
-# This script installs and configures HAProxy on an Ubuntu server.
+# This script configures Nginx to include a custom HTTP response header
+# named X-Served-By with the value being the hostname of the server.
 
-# Check if the script is being run with superuser privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script as root or using sudo."
-    exit 1
-fi
+apt-get update
+apt-get install -y nginx
 
-# Install HAProxy if not already installed
-if ! command -v haproxy &>/dev/null; then
-    apt-get update
-    apt-get install -y haproxy
-fi
+mkdir -p /var/www/html
+touch /var/www/html/index.html
+echo "Holberton School" > /var/www/html/index.html
+touch /var/www/html/404.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-# Configure HAProxy to distribute requests using round-robin
-echo "Configuring HAProxy..."
-cat <<EOF > /etc/haproxy/haproxy.cfg
-global
-    log /dev/log local0
-    log /dev/log local1 notice
-    maxconn 4096
-    user haproxy
-    group haproxy
+printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    add_header X-Served-By $HOSTNAME;
+    root   /var/www/html;
+    index  index.html index.htm;
 
-defaults
-    log global
-    mode http
-    option httplog
-    option dontlognull
-    retries 3
-    option redispatch
-    maxconn 2000
-    timeout connect 5s
-    timeout client 30s
-    timeout server 30s
+    location /redirect_me {
+        return 301 http://cuberule.com/;
+    }
 
-frontend http-in
-    bind *:80
-    default_backend web-servers
+    error_page 404 /404.html;
+    location /404 {
+      root /var/www/html;
+      internal;
+    }
+}" > /etc/nginx/sites-available/default
 
-backend web-servers
-    balance roundrobin
-    server web-01 [STUDENT_ID]-web-01:80 check
-    server web-02 [STUDENT_ID]-web-02:80 check
-EOF
-
-# Enable and start HAProxy service
-systemctl enable haproxy
-systemctl start haproxy
-
-echo "HAProxy installation and configuration completed."
+service nginx restart
