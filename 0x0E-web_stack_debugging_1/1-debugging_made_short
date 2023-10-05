@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # This script installs and configures Nginx to listen on port 80
-apt update
-apt install -y nginx
-service nginx stop
-service nginx status
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 service nginx start
+kill "$(pgrep 'nginx' | head -1)"
