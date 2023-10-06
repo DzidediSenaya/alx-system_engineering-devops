@@ -1,66 +1,40 @@
-#!/usr/bin/env bash
-
-# Install HAProxy 1.5 or higher if not already installed
-# Install Certbot and obtain an SSL certificate for your subdomain
-
-# Install HAProxy and Certbot (Assuming you are on a Debian/Ubuntu system)
-sudo apt-get update
-sudo apt-get install -y haproxy certbot
-
-# Create a certificate using Certbot
-sudo certbot certonly --standalone -d www.lebenebotanicals.tech
-
-# Create HAProxy configuration file
-cat <<EOF > /etc/haproxy/haproxy.cfg
-# Global Configuration
 global
-    log /dev/log local0
+    log     /dev/log local0
     maxconn 2048
-    user haproxy
-    group haproxy
+    user    haproxy
+    group   haproxy
     tune.ssl.default-dh-param 2048
 
-# Defaults Configuration
 defaults
-    log global
-    mode http
-    option httplog
-    option dontlognull
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
     retries 3
-    option redispatch
-    timeout connect 5000
-    timeout client 10000
-    timeout server 10000
-    option forwardfor
-    option http-server-close
+    option  redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+    option  forwardfor
+    option  http-server-close
 
-# Frontend Configurations
 frontend www-http
-    bind 0.0.0.0:80
+    bind   0.0.0.0:80
     reqadd X-Forwarded-Proto:\ http
     default_backend www-backend
 
 frontend www-https
-    bind 0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/fullchain.pem
+    bind 0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/privkey.pem
     reqadd X-Forwarded-Proto:\ https
     acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     use_backend letsencrypt-backend if letsencrypt-acl
     default_backend www-backend
 
-# Backend Configuration
 backend www-backend
-    balance roundrobin
+    balance  roundrobin
     redirect scheme https if !{ ssl_fc }
     server 235164-web-01 18.204.20.244:80 check
     server 235164-web-02 100.25.159.16:80 check
 
 backend letsencrypt-backend
     server letsencrypt 127.0.0.1:54321
-EOF
-
-# Restart HAProxy to apply the configuration
-sudo service haproxy restart
-
-# Test the setup by querying the subdomain
-curl -sI https://www.lebenebotanicals.tech
-curl https://www.lebenebotanicals.tech
