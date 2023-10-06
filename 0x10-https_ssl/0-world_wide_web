@@ -1,17 +1,31 @@
 #!/usr/bin/env bash
 # This script displays information about subdomains of a given domain.
-domain_information () {
-    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
-    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
+
+# Function to retrieve the IP address of a subdomain
+get_ip_address() {
+    dig +short "$1" | tail -1
 }
 
-if [ "$#" == 1 ]
-then
-  domain_information "$1" "www"
-  domain_information "$1" "lb-01"
-  domain_information "$1" "web-01"
-  domain_information "$1" "web-02"
-elif [ "$#" == 2 ]
-then
-  domain_information "$1" "$2"
+# Function to display domain information
+domain_information() {
+    local domain="$1"
+    local subdomain="$2"
+    local ip_address=$(get_ip_address "$subdomain.$domain")
+
+    if [ -z "$ip_address" ]; then
+        echo "The subdomain $subdomain does not exist or could not be resolved."
+    else
+        echo "The subdomain $subdomain is a A record and points to $ip_address"
+    fi
+}
+
+if [ "$#" -eq 1 ]; then
+    domain_information "$1" "www"
+    domain_information "$1" "lb-01"
+    domain_information "$1" "web-01"
+    domain_information "$1" "web-02"
+elif [ "$#" -eq 2 ]; then
+    domain_information "$1" "$2"
+else
+    echo "Usage: $0 <domain> [subdomain]"
 fi
