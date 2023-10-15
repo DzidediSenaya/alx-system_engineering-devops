@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
 # This script displays information about subdomains of a given domain.
 
-# Function to get DNS record information for a subdomain
-get_dns_info() {
-  local domain="$1"
-  local subdomain="$2"
-  local result
-  result=$(dig "$subdomain.$domain" | awk '/^;; ANSWER SECTION:/{getline; print}')
-  echo "$result"
+# Function to retrieve the IP address of a subdomain
+get_ip_address() {
+    dig +short "$1" | tail -1
 }
 
-# Check if both domain and subdomain are provided
-if [ "$#" -eq 2 ]; then
-  domain="$1"
-  subdomain="$2"
-  dns_info=$(get_dns_info "$domain" "$subdomain")
-  echo "The subdomain $subdomain is a $dns_info record and points to $dns_info"
-# Check if only domain is provided, and display information for default subdomains
-elif [ "$#" -eq 1 ]; then
-  domain="$1"
-  default_subdomains=("www" "lb-01" "web-01" "web-02")
-  for subdomain in "${default_subdomains[@]}"; do
-    dns_info=$(get_dns_info "$domain" "$subdomain")
-    echo "The subdomain $subdomain is a $dns_info record and points to $dns_info"
-  done
+# Function to display domain information
+domain_information() {
+    local domain="$1"
+    local subdomain="$2"
+    local ip_address=$(get_ip_address "$subdomain.$domain")
+
+    if [ -z "$ip_address" ]; then
+        echo "The subdomain $subdomain does not exist or could not be resolved."
+    else
+        echo "The subdomain $subdomain is a A record and points to $ip_address"
+    fi
+}
+
+if [ "$#" -eq 1 ]; then
+    domain_information "$1" "www"
+    domain_information "$1" "lb-01"
+    domain_information "$1" "web-01"
+    domain_information "$1" "web-02"
+elif [ "$#" -eq 2 ]; then
+    domain_information "$1" "$2"
 else
-  echo "Usage: $0 domain [subdomain]"
+    echo "Usage: $0 <domain> [subdomain]"
 fi

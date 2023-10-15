@@ -1,47 +1,40 @@
-#!/usr/bin/env bash
-# Setup HAProxy with SSL termination for subdomain www.lebenebotanicals.tech
-
-# Install HAProxy 1.5 or higher if not already installed
-# Install Certbot and obtain an SSL certificate for www.lebenebotanicals.tech
-# Create HAProxy configuration file
-cat <<EOF > /etc/haproxy/haproxy.cfg
 global
-    log /dev/log    local0
-    log /dev/log    local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin
-    stats timeout 30s
-    user haproxy
-    group haproxy
-    daemon
+    log     /dev/log local0
+    maxconn 2048
+    user    haproxy
+    group   haproxy
+    tune.ssl.default-dh-param 2048
 
 defaults
     log     global
     mode    http
     option  httplog
     option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
+    retries 3
+    option  redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+    option  forwardfor
+    option  http-server-close
 
 frontend www-http
-    bind *:80
+    bind   0.0.0.0:80
     reqadd X-Forwarded-Proto:\ http
-    acl is_ssl hdr(X-Forwarded-Proto) https
-    redirect scheme https if !is_ssl
+    default_backend www-backend
 
 frontend www-https
-    bind *:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/fullchain.pem
+    bind 0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.lebenebotanicals.tech/www.lebenebotanicals.tech.pem
     reqadd X-Forwarded-Proto:\ https
+    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
     default_backend www-backend
 
 backend www-backend
-    server web-server 127.0.0.1:80 check
-EOF
+    balance  roundrobin
+    redirect scheme https if !{ ssl_fc }
+    server 235164-web-01 18.204.20.244:80 check
+    server 235164-web-02 100.25.159.16:80 check
 
-# Restart HAProxy to apply the configuration
-service haproxy restart
-
-# Test the setup by querying the subdomain
-curl -sI https://www.lebenebotanicals.tech
-curl https://www.lebenebotanicals.tech
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:54321
