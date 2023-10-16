@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Replace 'root' with 'nginx' in the Nginx configuration file
+sed -i 's/user\s*root;/user nginx;/' /etc/nginx/nginx.conf
+
+# Restart Nginx to apply the changes
+service nginx restart
+
+# Verify that Nginx is running as the 'nginx' user
+ps auxff | grep ngin[x]
+
+# Verify that Nginx is listening on port 8080
+nc -z 0 8080
