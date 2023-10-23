@@ -5,9 +5,8 @@ TODO list progress from a REST API and exports it to a CSV file.
 """
 
 import csv
-import sys
 import requests
-
+import sys
 
 
 
