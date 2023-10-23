@@ -4,7 +4,7 @@ This script retrieves and displays information about an employee's
 TODO list progress from a REST API and exports it to a JSON file.
 """
 
-import csv
+import json
 import requests
 import sys
 
@@ -24,8 +24,8 @@ def get_employee_todo_progress(employee_id):
     todo_list = response.json()
 
     # Prepare the data for JSON export
-    user_id = employee_data['id']
-    json_data = {str(user_id): []}
+    user_id = str(employee_data['id'])
+    json_data = {user_id: []}
 
     for task in todo_list:
         task_data = {
@@ -33,7 +33,7 @@ def get_employee_todo_progress(employee_id):
             "completed": task['completed'],
             "username": employee_data['username']
         }
-        json_data[str(user_id)].append(task_data)
+        json_data[user_id].append(task_data)
 
     # Export the data to a JSON file
     file_name = f"{user_id}.json"
