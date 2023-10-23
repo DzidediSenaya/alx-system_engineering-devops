@@ -4,9 +4,11 @@ This script retrieves and displays information about an employee's
 TODO list progress from a REST API and exports it to a CSV file.
 """
 
-import requests
-import sys
 import csv
+import sys
+import requests
+
+
 
 
 if __name__ == "__main__":
