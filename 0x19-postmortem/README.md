@@ -23,7 +23,7 @@
 **Timeline:**
 
 - **Issue Detected:**
-  - November 7, 2023, 09:45 AM (UTC)
+  - November 7, 2023, 09:45 AM (GMT)
   - Our monitoring system detected the service downtime and raised an alert.
 
 - **Actions Taken:**
