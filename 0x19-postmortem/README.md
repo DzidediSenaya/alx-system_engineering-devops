@@ -1,6 +1,12 @@
 **Postmortem: When the Internet Took an Unexpected Coffee Break - November 7, 2023**
 
+
+
 ![coffee break illustration](coffee_cartoon.png)
+
+
+
+
 
 **Issue Summary:**
 
