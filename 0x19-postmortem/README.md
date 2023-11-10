@@ -1,6 +1,12 @@
 **Postmortem: When the Internet Took an Unexpected Coffee Break - November 7, 2023**
 
+
+
 ![coffee break illustration](coffee_cartoon.png)
+
+
+
+
 
 **Issue Summary:**
 
@@ -23,7 +29,7 @@
 **Timeline:**
 
 - **Issue Detected:**
-  - November 7, 2023, 09:45 AM (UTC)
+  - November 7, 2023, 09:45 AM (GMT)
   - Our monitoring system detected the service downtime and raised an alert.
 
 - **Actions Taken:**
