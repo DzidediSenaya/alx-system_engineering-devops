@@ -1,12 +1,6 @@
 **Postmortem: When the Internet Took an Unexpected Coffee Break - November 7, 2023**
 
-
-
-![coffee break illustration](coffee_cartoon.png)
-
-
-
-
+![image](https://github.com/DzidediSenaya/alx-system_engineering-devops/assets/122812952/6b191ab0-34db-47c7-b7a0-adfbc9b45c2a)
 
 **Issue Summary:**
 
