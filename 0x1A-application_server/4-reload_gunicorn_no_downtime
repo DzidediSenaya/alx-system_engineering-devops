@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Get the process IDs of the Gunicorn workers
+worker_pids=$(pgrep gunicorn)
+
+# Print the current Gunicorn process IDs
+echo "Current Gunicorn process IDs: $worker_pids"
+
+# Send a SIGHUP signal to each worker to gracefully reload
+for pid in $worker_pids; do
+    echo "Sending SIGHUP signal to process $pid"
+    kill -s SIGHUP $pid
+done
+
+# Print a message indicating that the reload is complete
+echo "Gunicorn reload complete"
+

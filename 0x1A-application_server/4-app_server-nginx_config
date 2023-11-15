@@ -1,0 +1,31 @@
+# Nginx configuration for AirBnB clone v3 RESTful API
+
+# Listen on port 80 for both IPv4 and IPv6
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    # Server name placeholder
+    server_name _;
+
+    # Proxy requests to the Gunicorn instance for /api/
+    location /api/ {
+        proxy_pass http://0.0.0.0:5002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Error pages configuration
+    error_page 404 /404.html;
+    location = /404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+}
+

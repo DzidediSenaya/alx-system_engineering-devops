@@ -1,0 +1,37 @@
+# Nginx configuration to proxy requests to Gunicorn instances
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    # Server name placeholder
+    server_name _;
+
+    # Proxy requests to /airbnb-onepage/ to Gunicorn on port 5000
+    location /airbnb-onepage/ {
+        proxy_pass http://0.0.0.0:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Proxy requests to /airbnb-dynamic/number_odd_or_even/ to Gunicorn on port 5001
+    location /airbnb-dynamic/number_odd_or_even/ {
+        proxy_pass http://0.0.0.0:5001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Error pages configuration
+    error_page 404 /404.html;
+    location = /404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+}
+
