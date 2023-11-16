@@ -1,4 +1,4 @@
-# Enable the user holberton to login and open files without error.
+# Puppet manifes to allow seamless login for holberton user and error-free file opening.
 
 # Increase hard file limit for Holberton user.
 exec { 'increase-hard-file-limit-for-holberton-user':
