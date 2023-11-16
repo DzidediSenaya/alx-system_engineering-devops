@@ -9,15 +9,15 @@ exec { 'set-file-limits-for-holberton':
 
 # Exec resource to apply the changes
 exec { 'apply-file-limits':
-  command => 'ulimit -n 4096',
+  command => 'echo "ulimit -n 4096" >> /home/holberton/.bashrc',
   path    => '/usr/local/bin/:/bin/',
   onlyif  => 'grep "holberton" /etc/security/limits.conf', # Check if user limit is set
+  require => Exec['set-file-limits-for-holberton'], # Ensure the limits are set before applying
 }
 
 # Exec resource to restart the session for changes to take effect
 exec { 'restart-session':
-  command     => '/bin/bash -l',
+  command     => 'su - holberton -c "source ~/.bashrc"',
   refreshonly => true,
   subscribe   => Exec['apply-file-limits'],
 }
-
