@@ -9,7 +9,22 @@ exec { 'fix-for-nginx':
 
 # Restart Nginx after configuration changes
 exec { 'nginx-restart':
-  command => 'service nginx restart',
-  path    => '/etc/init.d/',
+  command     => 'service nginx restart',
+  path        => '/etc/init.d/',
   refreshonly => true,
 }
+
+# Sleep for a few seconds to allow Nginx to fully restart before continuing
+exec { 'sleep':
+  command => 'sleep 5',
+  path    => '/bin/',
+  before  => Exec['ab-benchmark'],
+}
+
+# ApacheBench benchmarking
+exec { 'ab-benchmark':
+  command => 'ab -n 2000 -c 100 http://localhost/',
+  path    => '/usr/bin/',
+  require => Exec['sleep'],
+}
+
